@@ -1,0 +1,11 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+logs/
+models/*.onnx
+assets/*.wav
+assets/*.mp3
+*.tmp

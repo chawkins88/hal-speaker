@@ -1,0 +1,24 @@
+# Audio I/O
+sounddevice
+soundfile
+
+# Wake word detection
+openwakeword
+
+# Speech-to-text
+faster-whisper
+
+# TTS (primary — Microsoft neural voices, free, no API key)
+edge-tts
+
+# TTS fallback (offline)
+pyttsx3
+
+# HTTP relay to OpenClaw gateway
+aiohttp
+
+# Config
+python-dotenv
+
+# Optional: numpy (usually pulled in by the above, listed explicitly)
+numpy
