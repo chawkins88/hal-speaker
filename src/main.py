@@ -104,6 +104,9 @@ async def run():
 
     current_turn: asyncio.Task | None = None
 
+    log.info("Preloading Whisper model...")
+    await listener.preload()
+    await speaker.warmup()
     await speaker.say_startup()
 
     if config.test_mode:

@@ -24,6 +24,11 @@ class Listener:
         self.config = config
         self._whisper = None
 
+    async def preload(self):
+        """Preload the Whisper model at startup to reduce first-turn latency."""
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._load_whisper)
+
     def _load_whisper(self):
         if self._whisper is not None:
             return

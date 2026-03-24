@@ -11,6 +11,8 @@ import logging
 import tempfile
 from pathlib import Path
 
+from text_utils import split_for_speech
+
 import sounddevice as sd
 import soundfile as sf
 
@@ -28,14 +30,30 @@ class Speaker:
         self.config = config
         self._startup_idx = 0
 
+    async def warmup(self):
+        """Warm up TTS stack with a tiny synthesis to reduce first-turn latency."""
+        try:
+            audio_path = await self._synthesize("Ready.")
+            try:
+                audio_path.unlink()
+            except Exception:
+                pass
+            log.info("TTS warmup complete")
+        except Exception as e:
+            log.warning("TTS warmup failed: %s", e)
+
     async def say(self, text: str):
-        """Synthesize text and play it through the speaker."""
+        """Synthesize text and play it through the speaker in short speech chunks."""
         text = text.strip()
         if not text:
             return
         try:
-            audio_path = await self._synthesize(text)
-            await self._play(audio_path)
+            chunks = split_for_speech(text)
+            if not chunks:
+                return
+            for chunk in chunks:
+                audio_path = await self._synthesize(chunk)
+                await self._play(audio_path)
         except Exception as e:
             log.error("TTS error: %s", e)
 
