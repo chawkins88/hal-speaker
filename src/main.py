@@ -102,6 +102,8 @@ async def run():
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
+    current_turn: asyncio.Task | None = None
+
     await speaker.say_startup()
 
     if config.test_mode:
@@ -111,14 +113,29 @@ async def run():
 
     while not stop.is_set():
         try:
-            await handle_one_turn(config, listener, wake, relay, speaker)
+            current_turn = asyncio.create_task(handle_one_turn(config, listener, wake, relay, speaker))
+            await current_turn
+            current_turn = None
+        except asyncio.CancelledError:
+            break
         except Exception as e:
             log.error("Turn failed: %s", e)
             await asyncio.sleep(1)
 
+    if current_turn and not current_turn.done():
+        current_turn.cancel()
+        try:
+            await asyncio.wait_for(current_turn, timeout=1.0)
+        except Exception:
+            pass
+
+    await relay.close()
     log.info("hal-speaker stopped")
 
 
 if __name__ == "__main__":
     Path("logs").mkdir(exist_ok=True)
-    asyncio.run(run())
+    try:
+        asyncio.run(run())
+    except KeyboardInterrupt:
+        log.info("Interrupted by user, exiting cleanly")
