@@ -44,11 +44,15 @@ class HalRelay:
 
         log.debug("Relaying to Hal: %r", text)
 
+        headers = {"Content-Type": "application/json"}
+        if self.config.openclaw_auth_token:
+            headers["Authorization"] = f"Bearer {self.config.openclaw_auth_token}"
+
         try:
             async with session.post(
                 f"{base_url}/api/voice/message",
                 json=payload,
-                headers={"Content-Type": "application/json"},
+                headers=headers,
             ) as resp:
                 if resp.status != 200:
                     body = await resp.text()

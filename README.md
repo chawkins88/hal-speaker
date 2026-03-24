@@ -40,6 +40,7 @@ Key settings in `.env`:
 ```
 OPENCLAW_URL=http://<hal-vm-ip>:18789
 OPENCLAW_SESSION_KEY=agent:main:voice:hal-speaker
+OPENCLAW_AUTH_TOKEN=<voice-relay-auth-token>
 TTS_VOICE=en-US-GuyNeural
 WHISPER_MODEL=base.en
 SAMPLE_RATE=16000

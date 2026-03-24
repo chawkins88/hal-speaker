@@ -39,6 +39,7 @@ class Config:
     openclaw_url: str = "http://localhost:9999"
     openclaw_channel: str = "voice"
     openclaw_session_key: str = ""    # Set in .env: OPENCLAW_SESSION_KEY
+    openclaw_auth_token: str = ""     # Set in .env: OPENCLAW_AUTH_TOKEN
     relay_timeout: float = 30.0
 
     # TTS
@@ -65,6 +66,7 @@ class Config:
             openclaw_url=os.getenv("OPENCLAW_URL", "http://localhost:9999"),
             openclaw_channel=os.getenv("OPENCLAW_CHANNEL", "voice"),
             openclaw_session_key=os.getenv("OPENCLAW_SESSION_KEY", ""),
+            openclaw_auth_token=os.getenv("OPENCLAW_AUTH_TOKEN", ""),
             relay_timeout=float(os.getenv("RELAY_TIMEOUT", "30")),
             tts_voice=os.getenv("TTS_VOICE", "en-US-GuyNeural"),
             tts_rate=os.getenv("TTS_RATE", "+0%"),
