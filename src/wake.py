@@ -11,8 +11,9 @@ See: https://github.com/dscripka/openWakeWord
 import asyncio
 import logging
 import numpy as np
-import sounddevice as sd
 from pathlib import Path
+
+from audio_utils import open_input_stream_with_fallback
 
 log = logging.getLogger("wake")
 
@@ -63,13 +64,24 @@ class WakeWordDetector:
     def _detect_blocking(self) -> bool:
         """Blocking wake word detection. Runs in thread."""
         detected = False
-        with sd.InputStream(
-            samplerate=self.config.sample_rate,
-            channels=1,
-            dtype="int16",
-            device=self.config.input_device,
-            blocksize=CHUNK_SAMPLES,
-        ) as stream:
+        try:
+            stream_ctx = open_input_stream_with_fallback(
+                samplerate=self.config.sample_rate,
+                channels=1,
+                dtype="int16",
+                device=self.config.input_device,
+                blocksize=CHUNK_SAMPLES,
+            )
+        except Exception as e:
+            log.error(
+                "Wake-word input stream failed to open (device=%s, sample_rate=%s): %s",
+                self.config.input_device,
+                self.config.sample_rate,
+                e,
+            )
+            raise
+
+        with stream_ctx as stream:
             while not detected:
                 audio_chunk, _ = stream.read(CHUNK_SAMPLES)
                 audio_np = audio_chunk.flatten().astype(np.float32) / 32768.0

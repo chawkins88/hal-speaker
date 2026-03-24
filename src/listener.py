@@ -12,8 +12,9 @@ import wave
 from pathlib import Path
 
 import numpy as np
-import sounddevice as sd
 import soundfile as sf
+
+from audio_utils import open_input_stream_with_fallback
 
 log = logging.getLogger("listener")
 
@@ -70,13 +71,24 @@ class Listener:
 
         log.debug("Recording utterance (silence threshold=%.3f, silence=%.1fs)", silence_thresh, silence_dur)
 
-        with sd.InputStream(
-            samplerate=sample_rate,
-            channels=1,
-            dtype="float32",
-            device=self.config.input_device,
-            blocksize=chunk_size,
-        ) as stream:
+        try:
+            stream_ctx = open_input_stream_with_fallback(
+                samplerate=sample_rate,
+                channels=1,
+                dtype="float32",
+                device=self.config.input_device,
+                blocksize=chunk_size,
+            )
+        except Exception as e:
+            log.error(
+                "Recorder input stream failed to open (device=%s, sample_rate=%s): %s",
+                self.config.input_device,
+                sample_rate,
+                e,
+            )
+            raise
+
+        with stream_ctx as stream:
             for _ in range(max_chunks):
                 chunk, _ = stream.read(chunk_size)
                 chunk_flat = chunk.flatten()

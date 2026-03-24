@@ -14,9 +14,10 @@ class Config:
     # Device identity
     device_name: str = "hal-speaker"
 
-    # Wake word (openWakeWord model name)
+    # Wake word / test mode
     wake_word: str = "hey_hal"
     wake_word_threshold: float = 0.5
+    test_mode: bool = False          # if true, bypass wake word and use Enter-to-talk
 
     # Audio hardware
     # Run `python3 -m sounddevice` to list device indices
@@ -55,6 +56,7 @@ class Config:
             device_name=os.getenv("DEVICE_NAME", "hal-speaker"),
             wake_word=os.getenv("WAKE_WORD", "hey_hal"),
             wake_word_threshold=float(os.getenv("WAKE_WORD_THRESHOLD", "0.5")),
+            test_mode=os.getenv("TEST_MODE", "false").strip().lower() in {"1", "true", "yes", "on"},
             input_device=_int_or_none(os.getenv("INPUT_DEVICE")),
             output_device=_int_or_none(os.getenv("OUTPUT_DEVICE")),
             sample_rate=int(os.getenv("SAMPLE_RATE", "16000")),

@@ -56,10 +56,18 @@ If startup fails with `Invalid sample rate`, try:
 - `SAMPLE_RATE=48000`
 - or leave `INPUT_DEVICE` / `OUTPUT_DEVICE` blank to use the system default audio path
 
+If the selected input device fails to open, `hal-speaker` now retries automatically with the system default input device and logs the failure clearly.
+
 If wake-word startup fails with NumPy/tflite errors, make sure the venv has:
 ```bash
 pip install 'numpy<2'
 ```
+
+For easier first testing, enable push-to-talk mode:
+```bash
+TEST_MODE=true
+```
+Then run the app and press **Enter** to record a turn instead of using the wake word.
 
 ## Running
 
