@@ -41,7 +41,12 @@ Key settings in `.env`:
 OPENCLAW_URL=http://<hal-vm-ip>:18789
 OPENCLAW_SESSION_KEY=agent:main:voice:hal-speaker
 OPENCLAW_AUTH_TOKEN=<voice-relay-auth-token>
+TTS_PROVIDER=edge
 TTS_VOICE=en-US-GuyNeural
+# or for ElevenLabs:
+# TTS_PROVIDER=elevenlabs
+# ELEVENLABS_VOICE_ID=<voice-id>
+# ELEVENLABS_API_KEY=<api-key>
 WHISPER_MODEL=base.en
 SAMPLE_RATE=16000
 ```

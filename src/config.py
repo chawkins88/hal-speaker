@@ -43,9 +43,13 @@ class Config:
     relay_timeout: float = 30.0
 
     # TTS
-    tts_voice: str = "en-US-GuyNeural"   # or en-US-JennyNeural, etc.
+    tts_provider: str = "edge"           # edge | elevenlabs | pyttsx3
+    tts_voice: str = "en-US-GuyNeural"   # edge voice name
     tts_rate: str = "+0%"
     tts_pitch: str = "+0Hz"
+    elevenlabs_api_key: str = ""
+    elevenlabs_voice_id: str = ""
+    elevenlabs_model_id: str = "eleven_multilingual_v2"
 
     # Chime audio files (relative to project root)
     chime_wake: str = "assets/chime_wake.wav"
@@ -68,9 +72,13 @@ class Config:
             openclaw_session_key=os.getenv("OPENCLAW_SESSION_KEY", ""),
             openclaw_auth_token=os.getenv("OPENCLAW_AUTH_TOKEN", ""),
             relay_timeout=float(os.getenv("RELAY_TIMEOUT", "30")),
+            tts_provider=os.getenv("TTS_PROVIDER", "edge"),
             tts_voice=os.getenv("TTS_VOICE", "en-US-GuyNeural"),
             tts_rate=os.getenv("TTS_RATE", "+0%"),
             tts_pitch=os.getenv("TTS_PITCH", "+0Hz"),
+            elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY", ""),
+            elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
+            elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
         )
 
 

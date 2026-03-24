@@ -11,10 +11,11 @@ import logging
 import tempfile
 from pathlib import Path
 
-from text_utils import split_for_speech
-
+import aiohttp
 import sounddevice as sd
 import soundfile as sf
+
+from text_utils import split_for_speech
 
 log = logging.getLogger("speaker")
 
@@ -77,7 +78,17 @@ class Speaker:
             await self._play(chime_path)
 
     async def _synthesize(self, text: str) -> Path:
-        """Use edge-tts to synthesize speech. Returns path to audio file."""
+        """Synthesize speech using the configured provider."""
+        provider = (self.config.tts_provider or "edge").strip().lower()
+
+        if provider == "elevenlabs":
+            if not self.config.elevenlabs_api_key or not self.config.elevenlabs_voice_id:
+                raise RuntimeError("ElevenLabs selected but ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID not set")
+            return await self._synthesize_elevenlabs(text)
+
+        if provider == "pyttsx3":
+            return await self._synthesize_pyttsx3(text)
+
         try:
             import edge_tts
 
@@ -94,6 +105,30 @@ class Speaker:
         except ImportError:
             log.warning("edge-tts not available, falling back to pyttsx3")
             return await self._synthesize_pyttsx3(text)
+
+    async def _synthesize_elevenlabs(self, text: str) -> Path:
+        """Synthesize speech using ElevenLabs REST API."""
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.config.elevenlabs_voice_id}"
+        payload = {
+            "text": text,
+            "model_id": self.config.elevenlabs_model_id,
+        }
+        headers = {
+            "xi-api-key": self.config.elevenlabs_api_key,
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg",
+        }
+        tmp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+        timeout = aiohttp.ClientTimeout(total=30)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, json=payload, headers=headers) as resp:
+                if resp.status != 200:
+                    body = await resp.text()
+                    raise RuntimeError(f"ElevenLabs HTTP {resp.status}: {body[:200]}")
+                audio = await resp.read()
+                with open(tmp.name, "wb") as f:
+                    f.write(audio)
+        return Path(tmp.name)
 
     async def _synthesize_pyttsx3(self, text: str) -> Path:
         """Offline TTS fallback using pyttsx3."""

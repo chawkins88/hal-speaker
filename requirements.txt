@@ -14,7 +14,7 @@ edge-tts
 # TTS fallback (offline)
 pyttsx3
 
-# HTTP relay to OpenClaw gateway
+# HTTP relay to OpenClaw gateway / ElevenLabs TTS
 aiohttp
 
 # Config
