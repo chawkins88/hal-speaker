@@ -22,7 +22,7 @@ class Config:
     # Run `python3 -m sounddevice` to list device indices
     input_device: int | None = None   # None = system default (ReSpeaker usually auto-detected)
     output_device: int | None = None  # None = system default
-    sample_rate: int = 16000
+    sample_rate: int = 16000          # configurable; some USB mics want 44100 or 48000
     channels: int = 1
 
     # Recording
@@ -57,6 +57,7 @@ class Config:
             wake_word_threshold=float(os.getenv("WAKE_WORD_THRESHOLD", "0.5")),
             input_device=_int_or_none(os.getenv("INPUT_DEVICE")),
             output_device=_int_or_none(os.getenv("OUTPUT_DEVICE")),
+            sample_rate=int(os.getenv("SAMPLE_RATE", "16000")),
             whisper_model=os.getenv("WHISPER_MODEL", "base.en"),
             whisper_device=os.getenv("WHISPER_DEVICE", "cpu"),
             openclaw_url=os.getenv("OPENCLAW_URL", "http://localhost:9999"),

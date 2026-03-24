@@ -20,5 +20,5 @@ aiohttp
 # Config
 python-dotenv
 
-# Optional: numpy (usually pulled in by the above, listed explicitly)
-numpy
+# Optional: numpy (pin <2 for openWakeWord/tflite compatibility)
+numpy<2

@@ -38,15 +38,27 @@ Then edit `.env` with your settings.
 Key settings in `.env`:
 
 ```
-OPENCLAW_URL=http://<hal-vm-ip>:9999
-OPENCLAW_SESSION_KEY=<your-session-key>
+OPENCLAW_URL=http://<hal-vm-ip>:18789
+OPENCLAW_SESSION_KEY=agent:main:voice:hal-speaker
 TTS_VOICE=en-US-GuyNeural
 WHISPER_MODEL=base.en
+SAMPLE_RATE=16000
 ```
 
 Find your audio device indices:
 ```bash
+source .venv/bin/activate
 python3 -m sounddevice
+```
+
+If startup fails with `Invalid sample rate`, try:
+- `SAMPLE_RATE=44100`
+- `SAMPLE_RATE=48000`
+- or leave `INPUT_DEVICE` / `OUTPUT_DEVICE` blank to use the system default audio path
+
+If wake-word startup fails with NumPy/tflite errors, make sure the venv has:
+```bash
+pip install 'numpy<2'
 ```
 
 ## Running
